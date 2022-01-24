@@ -266,7 +266,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         if day[j] < endGrow:
             
             for hr in range(0,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
-                parMicroE = (Light[day[j],hr]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
+                parMicroE = (Light['Day'][day[j]][hr]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
                 print(parMicroE)
                 intSolarRad = parMicroE*math.exp(-k*twlvg)  #from Charisma instructions: tells how much of the light a plant is going to get as PAR in microeinsteins based on how many leaves are on the plant
                 intLightpH = intSolarRad/(intSolarRad+Hi) #amoung of light absorbed, per half saturaion constants from Charisma eq. 3. the monod or michaelis/menten function is adequate for describing the photosynthetic response to light
@@ -280,43 +280,43 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             
             dailyphoto.append(gphot)
             
-    #if then statement ends glucose generation at end of growing season 
-    if day[j] >= endGrow:
-        gphot = 0
+        #if then statement ends glucose generation at end of growing season 
+        if day[j] >= endGrow:
+            gphot = 0
         
         
             
-    #############################
-    #this section calculates death and mortality of the plant
-    #############################
+        #############################
+        #this section calculates death and mortality of the plant
+        #############################
     
     
-    #Mortality function
-    #how much growth (lv, st, rt) are going to die each based on time of year and temperature, with assumption that there are more leaves dying as it gets hotter
-    #Death rate based on julian day and temp - Best and Boyd A24-25
+        #Mortality function
+        #how much growth (lv, st, rt) are going to die each based on time of year and temperature, with assumption that there are more leaves dying as it gets hotter
+        #Death rate based on julian day and temp - Best and Boyd A24-25
     
-    if day[j] > leafDieOff:
-        tempi = pd.Series([-100, 19, 19.01, 30, 30.01, 40, 40.01, 100])
-        dRi = pd.Series([0.021, 0.021, 0.042, 0.042, 0.084, 0.084, 1, 1])
-        death = np.interp(tempi, dRi, Light["meantemp"][day[j]]) #np.interp seems to be the R equivalent of "approx" which returns a list with components x and y
+        if day[j] > leafDieOff:
+            tempi = pd.Series([-100, 19, 19.01, 30, 30.01, 40, 40.01, 100])
+            dRi = pd.Series([0.021, 0.021, 0.042, 0.042, 0.084, 0.084, 1, 1])
+            death = np.interp(tempi, dRi, Light["meantemp"][day[j]]) #np.interp seems to be the R equivalent of "approx" which returns a list with components x and y
                                                                  #containing n coordinates which interpolate data points according to the method and rule desired
-        deathFrac = int(death[2]) 
-    else:
-        deathFrac = 0.0
+            deathFrac = int(death[2]) 
+        else:
+            deathFrac = 0.0
         
         
         
         
-    #amount of leaves, stems, and roots that will die each day where day is morning, midday, and evening combined
-    #plant death including temperature related death and probablistic death from binomial risk equation (don't have risk equation)
-    #ideath = 1, risk = 1, dt_balance = 1 twlvdNEW = 1*twlvg*deathFrac^1, so this statement is actually total weight X deathFrac
-    twlvdNEW = twlvg * deathFrac**(risk*dt_balance) # total weight of dead matter produced per timestep
-    twstdNEW = twstg * deathFrac**(risk*dt_balance) #total weight of dead matter produced per timestep
-    twrtdNEW = twrtg*deathFrac**(risk*dt_balance) #total weight of dead matter produced per timestep 
+        #amount of leaves, stems, and roots that will die each day where day is morning, midday, and evening combined
+        #plant death including temperature related death and probablistic death from binomial risk equation (don't have risk equation)
+        #ideath = 1, risk = 1, dt_balance = 1 twlvdNEW = 1*twlvg*deathFrac^1, so this statement is actually total weight X deathFrac
+        twlvdNEW = twlvg * deathFrac**(risk*dt_balance) # total weight of dead matter produced per timestep
+        twstdNEW = twstg * deathFrac**(risk*dt_balance) #total weight of dead matter produced per timestep
+        twrtdNEW = twrtg*deathFrac**(risk*dt_balance) #total weight of dead matter produced per timestep 
     
     
-    #plant growth
-    growthWeight = (gphot - respMaint)/glocseReg  #total weight of dry matter produced per day
+        #plant growth
+        growthWeight = (gphot - respMaint)/glocseReg  #total weight of dry matter produced per day
     
     
     
