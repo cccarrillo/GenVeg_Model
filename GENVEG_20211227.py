@@ -240,11 +240,12 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     if day[j] < endGrow and day[j] >= beginGrow:
         print('day: {} '.format(j)) 
         if day[j] < endGrow:
-            kmLVG = kmLVG_prime * 2**((Light['meantemp'][day[j]] - 25)/10)  #repiration coefficient for lvs, temp dependence from Teh 2006
+            kmLVG = kmLVG_prime * pow(2,((Light['meantemp'][day[j]] - 25)/10))  #repiration coefficient for lvs, temp dependence from Teh 2006
             print('kmlvg: {}'.format(kmLVG))
-            kmSTG = kmSTG_prime * 2**(Light['meantemp'][day[j]]-25/10) #respiration coefficient for stems, temp depencence from Teh 2006 page 134
+            kmSTG = kmSTG_prime* pow(2,((Light['meantemp'][day[j]] - 25)/10)) #respiration coefficient for stems, temp depencence from Teh 2006 page 134
             print('kmSTG: {}'.format(kmSTG))
-            kmRTG = kmRTG_prime * 2**(Light['meantemp'][day[j]]-25/10) #respiration coefficient for roots, temp dependence from Teh 2006 page 134
+            
+            kmRTG = kmRTG_prime * pow(2,((Light['meantemp'][day[j]] - 25)/10)) #respiration coefficient for roots, temp dependence from Teh 2006 page 134
             print('kmRTG: {}'.format(kmRTG))
             
             rmPrime = (kmLVG * twlvg) + (kmSTG * twstg) + (kmRTG * twrtg)  #maintenance respiration per day from Teh 2006
