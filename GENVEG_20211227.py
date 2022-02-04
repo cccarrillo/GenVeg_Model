@@ -214,6 +214,7 @@ print(function(258, 30))
 #this loops through the simulation time via for loop function
 
 for j in range(0,len(day)):   #length function gets or sets the length of a vector or other objects.
+    print('day: {} '.format(j))    
     if day[j] == beginGrow:
         twlvg = 0.25
         twstg = 0.1
@@ -224,8 +225,11 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     ##################################################
     
     totLeafWeight = twlvd + twlvg #twlvd = total (t) weight(w) leaves(lv), d @ dead and g is living or green
+    print('Leaf Weight: {}'.format(totLeafWeight))
     totStemWeight = twstd + twstg #total weight of stems where d at end is dead and g is living or green
+    print('Stem Weight: {}'.format(totStemWeight))
     totRootWeight = twrtd + twrtg #total weight of roots where d at end is dead and g is living or green
+    print('Root Weight: {}'.format(totRootWeight))
     
     ##################################################
     #Growth and Respiration
@@ -234,20 +238,27 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     
     #maintenance respiration
     if day[j] < endGrow and day[j] >= beginGrow:
+        print('day: {} '.format(j)) 
         if day[j] < endGrow:
             kmLVG = kmLVG_prime * 2**((Light['meantemp'][day[j]] - 25)/10)  #repiration coefficient for lvs, temp dependence from Teh 2006
+            print('kmlvg: {}'.format(kmLVG))
             kmSTG = kmSTG_prime * 2**(Light['meantemp'][day[j]]-25/10) #respiration coefficient for stems, temp depencence from Teh 2006 page 134
+            print('kmSTG: {}'.format(kmSTG))
             kmRTG = kmRTG_prime * 2**(Light['meantemp'][day[j]]-25/10) #respiration coefficient for roots, temp dependence from Teh 2006 page 134
+            print('kmRTG: {}'.format(kmRTG))
             
             rmPrime = (kmLVG * twlvg) + (kmSTG * twstg) + (kmRTG * twrtg)  #maintenance respiration per day from Teh 2006
+            print('rmPrime: {}'.format(rmPrime))
             
             plantAge = twlvg/totLeafWeight #calculates respiration adjustment based on aboveground biomass, as plants age needs less respiration
+            print('plant age: {}'.format(plantAge))
    
             if math.isnan(plantAge):
                 plantAge = 0
             
             respMaint = rmPrime * plantAge  #plant age dependence from Teh 2006 page 145
-            
+            print('respMaint: {}'.format(respMaint))
+'''            
         #if then statement stops respiration at end of growing season
         if day[j] >= endGrow:
             respMaint = 0
@@ -261,12 +272,13 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         dailyrespMaint[j] = respMaint
         
         
-        #Enter photosynthesis loop
+        #Enter photosynthesis loop  
         
         if day[j] < endGrow:
             
-            for hr in range(0,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
-                parMicroE = (Light['Day'][day[j]][hr]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
+            for hr in range(1,4):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
+                parMicroE = (Light.iloc[120,1]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
+                print(day[j])
                 print(parMicroE)
                 intSolarRad = parMicroE*math.exp(-k*twlvg)  #from Charisma instructions: tells how much of the light a plant is going to get as PAR in microeinsteins based on how many leaves are on the plant
                 intLightpH = intSolarRad/(intSolarRad+Hi) #amoung of light absorbed, per half saturaion constants from Charisma eq. 3. the monod or michaelis/menten function is adequate for describing the photosynthetic response to light
@@ -318,7 +330,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         #plant growth
         growthWeight = (gphot - respMaint)/glocseReg  #total weight of dry matter produced per day
     
-    
+'''    
     
         
     
