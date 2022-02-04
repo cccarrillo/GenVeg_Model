@@ -258,34 +258,42 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             
             respMaint = rmPrime * plantAge  #plant age dependence from Teh 2006 page 145
             print('respMaint: {}'.format(respMaint))
-'''            
+           
         #if then statement stops respiration at end of growing season
         if day[j] >= endGrow:
             respMaint = 0
         
         #glucose requirement for growth
         glocseReg = (FracDM_LVG * glucoseReqLVG) + (FracDM_STG * glucoseReqSTG) + (FracDM_RTG * glucoseReqRTG) #from Teh 2006 page 148
+        print('glocseReg: {}'.format(glocseReg))
         
         #writes results for daily respiration, plant age, and maintenance respiration
         dailyrespiration[j] = rmPrime
+        print('daily respiration: {}'.format(dailyrespiration))
         dailyplantage[j] = plantAge
+        print('daily plant age: {}'.format(dailyplantage))
         dailyrespMaint[j] = respMaint
+        print('dailyrespMaint: {}'.format(dailyrespMaint))
         
         
         #Enter photosynthesis loop  
-        
+      
         if day[j] < endGrow:
             
-            for hr in range(1,4):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
-                parMicroE = (Light.iloc[120,1]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
-                print(day[j])
-                print(parMicroE)
+            for hr in range(len(Light)):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
+                parMicroE = (Light.iloc[0,hr]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
+                print('day: {}'.format(day[j]))
+                print('parMicroE: {}'.format(parMicroE))
                 intSolarRad = parMicroE*math.exp(-k*twlvg)  #from Charisma instructions: tells how much of the light a plant is going to get as PAR in microeinsteins based on how many leaves are on the plant
+                print('intSolarRad: {}'.format(intSolarRad))
                 intLightpH = intSolarRad/(intSolarRad+Hi) #amoung of light absorbed, per half saturaion constants from Charisma eq. 3. the monod or michaelis/menten function is adequate for describing the photosynthetic response to light
+                print('intLightpH: {}'.format(intLightpH))
                 photosynthesis = pMax * intLightpH #pMax is the maximum rate of photosynthesis, species specific
+                print('photosynthesis: {}'.format(photosynthesis))
                 fgross[hr] = photosynthesis #calculates gross assimilation of fgross(like APT) via photosynthesis at specific hour calculate growth per day at three times per day, morning, middday, and evenning and this amount is weighted based on how much light is hitting hte plant based on the latitude of your study site
+                print('fgross: {}'.format(fgross[hr]))
                 dtga[hr] = fgross[hr]*wgaus[hr] #weights fgross for specific time of day
-                
+                print('dtga: {}'.format(dtga[hr]))
             dtgaCollapsed = sum(dtga)*twlvg  #calculates total biomass gained across plant (twlvg is amount of leaver/green matter): you feed the model total biomass and then from that we determine how much leaf mass there is and so then basically an average of how much that average leaf will produce multiplied by the number of leaves, this is assuming that all leaves are mature
             assimilatedCH2O = dtgaCollapsed*Light['daylength'][day[j]] #total biomass for day length
             gphot = assimilatedCH2O*(30/44) #converts carbohydrates to glucose where photosynthesis unit is glucose and then we later convert that glucose to biomass in another section
@@ -296,7 +304,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         if day[j] >= endGrow:
             gphot = 0
         
-        
+'''        
             
         #############################
         #this section calculates death and mortality of the plant
