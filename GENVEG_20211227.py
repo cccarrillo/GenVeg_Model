@@ -43,6 +43,8 @@ def setPlantParameters(Plants_PD_, Species_Type_):
 PlantParameters = setPlantParameters(Plants, Species)
 print(PlantParameters)
 
+
+
 print('pMax = ' + str(PlantParameters['pMax']))
 print('pMax from R Code = 0.0372')
 
@@ -280,8 +282,8 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         #Enter photosynthesis loop  
       
         if day[j] < endGrow:
-            
-            for hr in range(len(Light)):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
+            dailyphoto = []
+            for hr in range(0,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
                 parMicroE = (Light.iloc[0,hr]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
                 print('day: {}'.format(day[j]))
                 print('parMicroE: {}'.format(parMicroE))
@@ -295,18 +297,25 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
                 print('fgross: {}'.format(fgross[hr]))
                 dtga[hr] = fgross[hr]*wgaus[hr] #weights fgross for specific time of day
                 print('dtga: {}'.format(dtga[hr]))
+                
+                
+                
             dtgaCollapsed = sum(dtga)*twlvg  #calculates total biomass gained across plant (twlvg is amount of leaver/green matter): you feed the model total biomass and then from that we determine how much leaf mass there is and so then basically an average of how much that average leaf will produce multiplied by the number of leaves, this is assuming that all leaves are mature
+            print('dtgaCollapsed: {}'.format(dtgaCollapsed))
             assimilatedCH2O = dtgaCollapsed*Light['daylength'][day[j]] #total biomass for day length
+            print('Day length: {}'.format(Light['daylength'][day[j]]))
+            print('assimilatedCH2): {}'.format(assimilatedCH2O))
             gphot = assimilatedCH2O*(30/44) #converts carbohydrates to glucose where photosynthesis unit is glucose and then we later convert that glucose to biomass in another section
-            
+            print('gphot: {}'.format(gphot))
             dailyphoto.append(gphot)
+            print('dailyphoto: {}'.format(dailyphoto))
             
         #if then statement ends glucose generation at end of growing season 
         if day[j] >= endGrow:
             gphot = 0
         
-'''        
-            
+     
+'''            
         #############################
         #this section calculates death and mortality of the plant
         #############################
