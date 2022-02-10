@@ -360,6 +360,117 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         twlvg = twlvg + FracDM_LVG * growthWeight - twlvdNEW
         twrtg = twrtg + FracDM_RTG * growthWeight - twrtdNEW
         
+        #if plant is below minimum size, it won't grow and will lose green weight
+        
+        if twstg < 0.01:
+            twstg = 0
+            
+        if twlvg < 0.01:
+            twlvg = 0
+            
+        if twrtg < 0.01:
+            twrtg = 0
+            
+        #growth when plant is too small for photosynthesis = 10% of root grows to stems and leaves
+        
+        reDist = 0.1 * twrtg
+        
+        if ((twlvg >= minSize) | (twlvg == 0.1)):
+            reDist = 0 
+            
+        twstg = twstg = (reDist * (FracDM_STG/(FracDM_STG + FracDM_LVG))) #redistributes biomass to stems
+        twlvg = twlvg + (reDist * (FracDM_LVG/(FracDM_STG + FracDM_LVG))) #redistributes biomass to leaves
+        twrtg = twrtg - reDist      #bookkeeping to clear redistributed biomass from the roots
+        
+        #constrain the plant biomass
+        aboveBiomass = twlvg + twstg
+        extra = aboveBiomass - maxBiomass
+        
+        if ((aboveBiomass < maxBiomass) | (twrtg < 0)):
+            extra = 0 
+            
+        extraLv = extra * (FracDM_LVG/(FracDM_STG + FracDM_LVG))
+        extraSt = extra * (FracDM_STG/(FracDM_STG + FracDM_LVG))
+        twlvg = twlvg - extraLv
+        twstg = twstg - extraSt
+        
+        #if root is below minimum then entire plant dies and clear out dead material to reset any potential plant age
+        #problems (i.e., including dead material from previous plant)
+     
+        #distribute the new death into the dead part
+        twstd = twstd + twstdNEW
+        twlvd = twlvd + twlvdNEW
+        twrtd = twrtd + twrtdNEW
+        
+        #need to update biomass variable
+        biomass = twlvg + twstg
+        fracbiomass = biomass / maxBiomass
+        
+        if (twstg < (minSize * FracDM_STG)):
+            twstg = 0
+            
+        if (twlvg < (minSize * FracDM_LVG)):
+            twlvg = 0
+            
+        if (twrtg < (minSize * FracDM_RTG)):
+            twrtg = 0
+            
+        #need to update biomass var
+        biomass = twlvg + twstg
+        fracbiomass = biomass / maxBiomass 
+        
+        #distribute final biomass values into plants, stems, roots
+        plant_dens = twstg / tillerDensity * maxTillerWeight 
+        print('plant_dens: {}'.format(plant_dens))
+        if (plant_dens > maxDensity):
+            plant_dens = maxDensity
+            
+        till_dens = twstg / (plant_dens * tillerDensity)
+'''        
+        if math.isnan(till_dens):
+            till_dens = 0
+            
+        if (till_dens < 0):
+            till_dens - 0
+            
+        till_ht = till_dens * rWeightTillerHeight / 100
+        
+        if (till_ht > maxTillerHeight):
+            till_ht = maxTillerHeight / 100
+            
+        root_lg = RSratio * till_ht
+        
+        if (root_lg > maxRootLength):
+            root_lg = maxRootLength
+            
+        st_dia = 0
+        
+        if (till_dens > 0):
+            st_dia = 2 * (TCA/math.pi)**(0.5/100)
+            
+        Density = till_dens  #density value
+        Height = till_ht  #height value
+        Roots = root_lg  #Roots value
+        Dia = st_dia   #stem diameter value
+        AGBiomass = twlvg + twlvd + twstg + twstd
+        TOTBiomass = twlvg + twlvd + twstg + twstd + twrtd + twrtg
+        
+    #daily results outputted to vectors
+    
+    dailyleafg.iloc[j] = twlvg
+    dailyrootg.iloc[j] = twrtg
+    dailystemg.iloc[j] = twstg
+    dailyleafd.iloc[j] = twlvd
+    dailyrootd.iloc[j] = twrtd
+    dailystemd.iloc[j] = twstd
+    dailyAGbiomass.iloc[j] = twlvg + twlvd + twstg + twstd
+    dailyTOTbiomass.iloc[j] = twlvg + twlvd + twstg + twstd + twrtd + twrtg
+    dailyRTbiomass.iloc[j] = twrtd + twrtg
+    #dailyAGbiomass1.iloc[j] = twlvg + twlvd + twstg + twstd
+    
+'''   
+                
+            
             
     
    
