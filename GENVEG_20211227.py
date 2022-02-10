@@ -109,19 +109,19 @@ risk = 1
 
 #Initalizes Vectors for daily outputs of critical variables 
 
-dailyleafg = pd.Series([startsim,endsim])
-dailyrootg = pd.Series([startsim,endsim])
-dailystemg = pd.Series([startsim,endsim])
-dailyleafd = pd.Series([startsim,endsim])
-dailyrootd = pd.Series([startsim,endsim])
-dailystemd = pd.Series([startsim,endsim])
-dailyAGbiomass =pd.Series([startsim,endsim])
-dailyrespiration = pd.Series([startsim,endsim])
-dailyplantage = pd.Series([startsim,endsim])
-dailyrespMaint =pd.Series([startsim,endsim])
-dailyphoto = pd.Series([startsim,endsim])
-dailyTOTbiomass = pd.Series([startsim,endsim])
-dailyRTbiomass = pd.Series([startsim,endsim])
+dailyleafg = pd.Series(range(startsim,endsim+1))
+dailyrootg = pd.Series(range(startsim,endsim+1))
+dailystemg = pd.Series(range(startsim,endsim+1))
+dailyleafd = pd.Series(range(startsim,endsim+1))
+dailyrootd = pd.Series(range(startsim,endsim+1))
+dailystemd = pd.Series(range(startsim,endsim+1))
+dailyAGbiomass = pd.Series(range(startsim,endsim+1))
+dailyrespiration = pd.Series(range(startsim,endsim+1))
+dailyplantage = pd.Series(range(startsim,endsim+1))
+dailyrespMaint = pd.Series(range(startsim,endsim+1))
+dailyphoto = pd.Series(range(startsim,endsim+1))
+dailyTOTbiomass = pd.Series(range(startsim,endsim+1))
+dailyRTbiomass = pd.Series(range(startsim,endsim+1))
 
 ##################################################
 #FUNCTIONS CALLED IN MODEL!!!!!!
@@ -152,16 +152,16 @@ print(logistic(1, 0.5, 0, 0.5, 0.25))
 #INPUTS: Day of year and latitude
 #Output: PAR vlues at 3 different tiems of dat for Gaussian Integration
 
-twlvg = 10
-k = -0.02
-pMax = 0.25
+#twlvg = 10
+#k = -0.02
+#pMax = 0.25
 #day = 258
-lat = 30
+#lat = 30
 
-def function(day, lat):
+def PAR(day, lat):
     
     degree_to_rad = 0.017453292  #required to convert degrees to radians
-    rad_to_degree = (-math.asin((math.sin(23.45*degree_to_rad))*(math.cos(2*math.pi*(day+10)/365))))
+    #rad_to_degree = (-math.asin((math.sin(23.45*degree_to_rad))*(math.cos(2*math.pi*(day+10)/365))))
   
   
   
@@ -206,7 +206,7 @@ def function(day, lat):
         
     return tmpvec  #returns a vector of light values in MicroEinsteins
 
-print(function(258, 30))
+print(PAR(258, 30))
 
 
 ##################################################
@@ -216,7 +216,7 @@ print(function(258, 30))
 #this loops through the simulation time via for loop function
 
 for j in range(0,len(day)):   #length function gets or sets the length of a vector or other objects.
-    print('day: {} '.format(j))    
+    print('day: {} '.format(day[j]))    
     if day[j] == beginGrow:
         twlvg = 0.25
         twstg = 0.1
@@ -242,12 +242,12 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     if day[j] < endGrow and day[j] >= beginGrow:
         print('day: {} '.format(j)) 
         if day[j] < endGrow:
-            kmLVG = kmLVG_prime * pow(2,((Light['meantemp'][day[j]] - 25)/10))  #repiration coefficient for lvs, temp dependence from Teh 2006
+            kmLVG = kmLVG_prime * pow(2,((Light.iloc[j]['meantemp'] - 25)/10))  #repiration coefficient for lvs, temp dependence from Teh 2006
             print('kmlvg: {}'.format(kmLVG))
-            kmSTG = kmSTG_prime* pow(2,((Light['meantemp'][day[j]] - 25)/10)) #respiration coefficient for stems, temp depencence from Teh 2006 page 134
+            kmSTG = kmSTG_prime* pow(2,((Light.iloc[j]['meantemp'] - 25)/10)) #respiration coefficient for stems, temp depencence from Teh 2006 page 134
             print('kmSTG: {}'.format(kmSTG))
             
-            kmRTG = kmRTG_prime * pow(2,((Light['meantemp'][day[j]] - 25)/10)) #respiration coefficient for roots, temp dependence from Teh 2006 page 134
+            kmRTG = kmRTG_prime * pow(2,((Light.iloc[j]['meantemp'] - 25)/10)) #respiration coefficient for roots, temp dependence from Teh 2006 page 134
             print('kmRTG: {}'.format(kmRTG))
             
             rmPrime = (kmLVG * twlvg) + (kmSTG * twstg) + (kmRTG * twrtg)  #maintenance respiration per day from Teh 2006
@@ -261,9 +261,10 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             
             respMaint = rmPrime * plantAge  #plant age dependence from Teh 2006 page 145
             print('respMaint: {}'.format(respMaint))
-           
+      
         #if then statement stops respiration at end of growing season
         if day[j] >= endGrow:
+        #if day[j] >= endGrow and day[j] < beginGrow:
             respMaint = 0
         
         #glucose requirement for growth
@@ -271,7 +272,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         print('glocseReg: {}'.format(glocseReg))
         
         #writes results for daily respiration, plant age, and maintenance respiration
-        dailyrespiration[j] = rmPrime
+        dailyrespiration.iloc[j] = rmPrime
         print('daily respiration: {}'.format(dailyrespiration))
         dailyplantage[j] = plantAge
         print('daily plant age: {}'.format(dailyplantage))
@@ -282,21 +283,22 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         #Enter photosynthesis loop  
       
         if day[j] < endGrow:
-            dailyphoto = []
-            for hr in range(0,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
-                parMicroE = (Light.iloc[0,hr]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
+            #dailyphoto = []
+            for hr in range(1,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
+                parMicroE = (Light.iloc[j,hr+1]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
                 print('day: {}'.format(day[j]))
                 print('parMicroE: {}'.format(parMicroE))
-                intSolarRad = parMicroE*math.exp(-k*twlvg)  #from Charisma instructions: tells how much of the light a plant is going to get as PAR in microeinsteins based on how many leaves are on the plant
+                intSolarRad = parMicroE*math.exp(-(PlantParameters['k'])*twlvg)  #from Charisma instructions: tells how much of the light a plant is going to get as PAR in microeinsteins based on how many leaves are on the plant
                 print('intSolarRad: {}'.format(intSolarRad))
                 intLightpH = intSolarRad/(intSolarRad+Hi) #amoung of light absorbed, per half saturaion constants from Charisma eq. 3. the monod or michaelis/menten function is adequate for describing the photosynthetic response to light
                 print('intLightpH: {}'.format(intLightpH))
-                photosynthesis = pMax * intLightpH #pMax is the maximum rate of photosynthesis, species specific
+                photosynthesis = (PlantParameters['pMax']) * intLightpH #pMax is the maximum rate of photosynthesis, species specific
                 print('photosynthesis: {}'.format(photosynthesis))
-                fgross[hr] = photosynthesis #calculates gross assimilation of fgross(like APT) via photosynthesis at specific hour calculate growth per day at three times per day, morning, middday, and evenning and this amount is weighted based on how much light is hitting hte plant based on the latitude of your study site
+                fgross.iloc[hr] = photosynthesis #calculates gross assimilation of fgross(like APT) via photosynthesis at specific hour calculate growth per day at three times per day, morning, middday, and evenning and this amount is weighted based on how much light is hitting hte plant based on the latitude of your study site
                 print('fgross: {}'.format(fgross[hr]))
-                dtga[hr] = fgross[hr]*wgaus[hr] #weights fgross for specific time of day
+                dtga.iloc[hr] = fgross[hr]*wgaus[hr] #weights fgross for specific time of day
                 print('dtga: {}'.format(dtga[hr]))
+                round(dtga[hr],5)
                 
                 
                 
@@ -307,15 +309,15 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             print('assimilatedCH2): {}'.format(assimilatedCH2O))
             gphot = assimilatedCH2O*(30/44) #converts carbohydrates to glucose where photosynthesis unit is glucose and then we later convert that glucose to biomass in another section
             print('gphot: {}'.format(gphot))
-            dailyphoto.append(gphot)
+            dailyphoto.iloc[j] = gphot
             print('dailyphoto: {}'.format(dailyphoto))
             
         #if then statement ends glucose generation at end of growing season 
         if day[j] >= endGrow:
             gphot = 0
         
-     
-'''            
+ 
+            
         #############################
         #this section calculates death and mortality of the plant
         #############################
@@ -326,11 +328,11 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         #Death rate based on julian day and temp - Best and Boyd A24-25
     
         if day[j] > leafDieOff:
-            tempi = pd.Series([-100, 19, 19.01, 30, 30.01, 40, 40.01, 100])
-            dRi = pd.Series([0.021, 0.021, 0.042, 0.042, 0.084, 0.084, 1, 1])
-            death = np.interp(tempi, dRi, Light["meantemp"][day[j]]) #np.interp seems to be the R equivalent of "approx" which returns a list with components x and y
+            tempi =[-100, 19, 19.01, 30, 30.01, 40, 40.01, 100]
+            dRi = [0.021, 0.021, 0.042, 0.042, 0.084, 0.084, 1, 1]
+            deathFrac = np.interp(Light.iloc[j]['meantemp'],tempi, dRi) #np.interp seems to be the R equivalent of "approx" which returns a list with components x and y
                                                                  #containing n coordinates which interpolate data points according to the method and rule desired
-            deathFrac = int(death[2]) 
+            #deathFrac = int(death[2]) 
         else:
             deathFrac = 0.0
         
@@ -347,8 +349,20 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     
         #plant growth
         growthWeight = (gphot - respMaint)/glocseReg  #total weight of dry matter produced per day
+        
+        if (twlvg < minSize):  #if plant is less than minimum size, it won't grow
+            growthWeight = 0
+            
+        #distribute the life and death into the growing part with a floor of 0
+        #FracDM variables are constants of the amount in percentage of how much growth goes towards the three plant parts
+        
+        twstg = twstg + FracDM_STG * growthWeight - twstdNEW
+        twlvg = twlvg + FracDM_LVG * growthWeight - twlvdNEW
+        twrtg = twrtg + FracDM_RTG * growthWeight - twrtdNEW
+        
+            
     
-'''    
+   
     
         
     
