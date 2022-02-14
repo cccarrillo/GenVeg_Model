@@ -328,28 +328,36 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         #Death rate based on julian day and temp - Best and Boyd A24-25
     
         if day[j] > leafDieOff:
+            print('Day: {}'.format(day[j]))
             tempi =[-100, 19, 19.01, 30, 30.01, 40, 40.01, 100]
+            print('tempi: {}'.format(tempi))
             dRi = [0.021, 0.021, 0.042, 0.042, 0.084, 0.084, 1, 1]
+            print('dRi: {}'.format(dRi))
             deathFrac = np.interp(Light.iloc[j]['meantemp'],tempi, dRi) #np.interp seems to be the R equivalent of "approx" which returns a list with components x and y
                                                                  #containing n coordinates which interpolate data points according to the method and rule desired
-            #deathFrac = int(death[2]) 
-        else:
+            print('deathFrac: {}'.format(deathFrac))
+            #deathFrac = int(death[2])
+            
+        if day[j] < leafDieOff:
+            print('Day less than leaf die off: {}'.format(day[j]))
             deathFrac = 0.0
+            print('deathFrac at day < leaf die off: {}'.format(deathFrac))
+       
         
-        
-        
-        
+      
         #amount of leaves, stems, and roots that will die each day where day is morning, midday, and evening combined
         #plant death including temperature related death and probablistic death from binomial risk equation (don't have risk equation)
         #ideath = 1, risk = 1, dt_balance = 1 twlvdNEW = 1*twlvg*deathFrac^1, so this statement is actually total weight X deathFrac
         twlvdNEW = twlvg * deathFrac**(risk*dt_balance) # total weight of dead matter produced per timestep
+        print('twlvdNEW: {}'.format(twlvdNEW))
         twstdNEW = twstg * deathFrac**(risk*dt_balance) #total weight of dead matter produced per timestep
+        print('twstdNEW: {}'.format(twstdNEW))
         twrtdNEW = twrtg*deathFrac**(risk*dt_balance) #total weight of dead matter produced per timestep 
-    
-    
+        print('twrtdNEW: {}'.format(twrtdNEW))
+   
         #plant growth
         growthWeight = (gphot - respMaint)/glocseReg  #total weight of dry matter produced per day
-        
+        print('growth weight: {}'.format(growthWeight))
         if (twlvg < minSize):  #if plant is less than minimum size, it won't grow
             growthWeight = 0
             
@@ -357,54 +365,74 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         #FracDM variables are constants of the amount in percentage of how much growth goes towards the three plant parts
         
         twstg = twstg + FracDM_STG * growthWeight - twstdNEW
+        print('twstg: {}'.format(twstg))
         twlvg = twlvg + FracDM_LVG * growthWeight - twlvdNEW
+        print('twlvg: {}'.format(twlvg))
         twrtg = twrtg + FracDM_RTG * growthWeight - twrtdNEW
+        print('twrtg: {}'.format(twrtg))
         
         #if plant is below minimum size, it won't grow and will lose green weight
         
         if twstg < 0.01:
             twstg = 0
-            
+        print('twstg: {}'.format(twstg))
+        
         if twlvg < 0.01:
             twlvg = 0
-            
+        print('twlvg: {}'.format(twlvg))
+        
         if twrtg < 0.01:
             twrtg = 0
-            
+        print('twrtg: {}'.format(twrtg))
+         
         #growth when plant is too small for photosynthesis = 10% of root grows to stems and leaves
         
         reDist = 0.1 * twrtg
+        print('reDist: {}'.format(reDist))
         
         if ((twlvg >= minSize) | (twlvg == 0.1)):
             reDist = 0 
             
         twstg = twstg = (reDist * (FracDM_STG/(FracDM_STG + FracDM_LVG))) #redistributes biomass to stems
+        print('twstg: {}'.format(twstg))
         twlvg = twlvg + (reDist * (FracDM_LVG/(FracDM_STG + FracDM_LVG))) #redistributes biomass to leaves
+        print('twlvg: {}'.format(twlvg))
         twrtg = twrtg - reDist      #bookkeeping to clear redistributed biomass from the roots
+        print('twrtg: {}'.format(twrtg))
         
         #constrain the plant biomass
         aboveBiomass = twlvg + twstg
+        print('above biomass: {}'.format(aboveBiomass))
         extra = aboveBiomass - maxBiomass
+        print('extra: {}'.format(extra))
         
         if ((aboveBiomass < maxBiomass) | (twrtg < 0)):
             extra = 0 
             
         extraLv = extra * (FracDM_LVG/(FracDM_STG + FracDM_LVG))
+        print('extraLv: {}'.format(extraLv))
         extraSt = extra * (FracDM_STG/(FracDM_STG + FracDM_LVG))
+        print('extraSt: {}'.format(extraSt))
         twlvg = twlvg - extraLv
+        print('twlvg: {}'.format(twlvg))
         twstg = twstg - extraSt
-        
+        print('twstg: {}'.format(twstg))
         #if root is below minimum then entire plant dies and clear out dead material to reset any potential plant age
         #problems (i.e., including dead material from previous plant)
      
         #distribute the new death into the dead part
         twstd = twstd + twstdNEW
+        print('twstd: {}'.format(twstd))
         twlvd = twlvd + twlvdNEW
+        print('twlvd: {}'.format(twlvd))
         twrtd = twrtd + twrtdNEW
+        print('twrtd: {}'.format(twrtd))
         
         #need to update biomass variable
         biomass = twlvg + twstg
+        print('biomass: {}'.format(biomass))
         fracbiomass = biomass / maxBiomass
+        print('fracbiomass: {}'.format(fracbiomass))
         
         if (twstg < (minSize * FracDM_STG)):
             twstg = 0
@@ -417,7 +445,9 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             
         #need to update biomass var
         biomass = twlvg + twstg
+        print('biomass: {}'.format(biomass))
         fracbiomass = biomass / maxBiomass 
+        print('fracbiomass: {}'.format(fracbiomass))
         
         #distribute final biomass values into plants, stems, roots
         plant_dens = twstg / tillerDensity * maxTillerWeight 
@@ -426,13 +456,14 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             plant_dens = maxDensity
             
         till_dens = twstg / (plant_dens * tillerDensity)
-'''        
+        print('till_dens: {}'.format(till_dens))
+      
         if math.isnan(till_dens):
             till_dens = 0
             
         if (till_dens < 0):
-            till_dens - 0
-            
+            till_dens = 0
+'''            
         till_ht = till_dens * rWeightTillerHeight / 100
         
         if (till_ht > maxTillerHeight):
