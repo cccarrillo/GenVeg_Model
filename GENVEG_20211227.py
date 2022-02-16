@@ -25,6 +25,7 @@ import sqlite3
 import sys
 import math
 import array as arr
+import csv
 
 
 os.chdir(os.path.dirname(__file__))
@@ -375,15 +376,15 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         
         if twstg < 0.01:
             twstg = 0
-        print('twstg: {}'.format(twstg))
+            print('twstg: {}'.format(twstg))
         
         if twlvg < 0.01:
             twlvg = 0
-        print('twlvg: {}'.format(twlvg))
+            print('twlvg: {}'.format(twlvg))
         
         if twrtg < 0.01:
             twrtg = 0
-        print('twrtg: {}'.format(twrtg))
+            print('twrtg: {}'.format(twrtg))
          
         #growth when plant is too small for photosynthesis = 10% of root grows to stems and leaves
         
@@ -393,7 +394,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         if ((twlvg >= minSize) | (twlvg == 0.1)):
             reDist = 0 
             
-        twstg = twstg = (reDist * (FracDM_STG/(FracDM_STG + FracDM_LVG))) #redistributes biomass to stems
+        twstg = twstg + (reDist * (FracDM_STG/(FracDM_STG + FracDM_LVG))) #redistributes biomass to stems
         print('twstg: {}'.format(twstg))
         twlvg = twlvg + (reDist * (FracDM_LVG/(FracDM_STG + FracDM_LVG))) #redistributes biomass to leaves
         print('twlvg: {}'.format(twlvg))
@@ -463,13 +464,15 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             
         if (till_dens < 0):
             till_dens = 0
-'''            
+          
         till_ht = till_dens * rWeightTillerHeight / 100
+        print('till_ht: {}'.format(till_ht))
         
         if (till_ht > maxTillerHeight):
             till_ht = maxTillerHeight / 100
             
         root_lg = RSratio * till_ht
+        print('root_lg: {}'.format(root_lg))
         
         if (root_lg > maxRootLength):
             root_lg = maxRootLength
@@ -480,11 +483,17 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             st_dia = 2 * (TCA/math.pi)**(0.5/100)
             
         Density = till_dens  #density value
+        print('density: {}'.format(Density))
         Height = till_ht  #height value
+        print('height: {}'.format(Height))
         Roots = root_lg  #Roots value
+        print('roots: {}'.format(Roots))
         Dia = st_dia   #stem diameter value
+        print('dia: {}'.format(Dia))
         AGBiomass = twlvg + twlvd + twstg + twstd
+        print('AGBiomass: {}'.format(AGBiomass))
         TOTBiomass = twlvg + twlvd + twstg + twstd + twrtd + twrtg
+        print('TOTBiomass: {}'.format(TOTBiomass))
         
     #daily results outputted to vectors
     
@@ -499,7 +508,17 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     dailyRTbiomass.iloc[j] = twrtd + twrtg
     #dailyAGbiomass1.iloc[j] = twlvg + twlvd + twstg + twstd
     
-'''   
+
+
+
+#########OUTPUT FILE#########
+output_file = open("VegOutput.csv","w")
+output_file.write("Day, Mean_Temp, lvsg, rootsg, stemg, lvsd, rootd, stemd, AGB, TOTB\n")
+
+output_file.write(str(day.iloc[j]) + "," + str(Light.iloc[j]['meantemp']) + "," + str(dailyleafg.iloc[j]) + "," + str(dailyrootg.iloc[j]) + "," + str(dailystemg.iloc[j]) + "," + str(dailyleafd.iloc[j]) + "," + str(dailyrootd.iloc[j]) + "," + str(dailyAGbiomass.iloc[j]) + "," + str(dailyTOTbiomass.iloc[j]) + "\n")
+output_file.close() 
+
+
                 
             
             
