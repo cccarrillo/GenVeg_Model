@@ -509,6 +509,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     #dailyAGbiomass1.iloc[j] = twlvg + twlvd + twstg + twstd
     
     days = day.tolist()
+    avgtemp = Light["meantemp"].tolist()
     dailyleafg_list = dailyleafg.tolist()
     dailyrootg_list = dailyrootg.tolist()
     dailystemg_list = dailystemg.tolist()
@@ -520,7 +521,8 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     dailyRTbiomass_list = dailyRTbiomass.tolist()
     
 
-data_needs = (days, Light["meantemp"], dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass)
+data_needs = (days, avgtemp, dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass_list)
+
 
 #########OUTPUT FILE#########
 '''
@@ -540,7 +542,7 @@ def VegOutputCSV(filename, listoflist):
     out_file.close()
     
 VegOutputCSV("Vegoutput.csv", data_needs)            
-            
+ 
     
    
     
