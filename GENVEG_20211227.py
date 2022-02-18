@@ -79,7 +79,7 @@ TCA = 0.231           #total cross sectional area
 #Set length of simulation (Day of Year)
 startsim = 1   #start of simulation
 endsim = 365   #end of simulation
-day = list(range(startsim, endsim+1))   #Length of simulation, creates a vector from 1 to 365 given values of startsim and endsim defined
+day = pd.Series(list(range(startsim, endsim+1)))  #Length of simulation, creates a vector from 1 to 365 given values of startsim and endsim defined
 
 dt_balance = 1    #timestep
 endGrow = 320   #date that vegetation stops growing due to day of first freeze (changes based on latitude)
@@ -508,19 +508,38 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     dailyRTbiomass.iloc[j] = twrtd + twrtg
     #dailyAGbiomass1.iloc[j] = twlvg + twlvd + twstg + twstd
     
+    days = day.tolist()
+    dailyleafg_list = dailyleafg.tolist()
+    dailyrootg_list = dailyrootg.tolist()
+    dailystemg_list = dailystemg.tolist()
+    dailyleafd_list = dailyleafd.tolist()
+    dailyrootd_list = dailyrootd.tolist()
+    dailystemd_list = dailystemd.tolist()
+    dailyAGbiomass_list = dailyAGbiomass.tolist()
+    dailyTOTbiomass_list = dailyTOTbiomass.tolist()
+    dailyRTbiomass_list = dailyRTbiomass.tolist()
+    
 
-
+data_needs = (days, Light["meantemp"], dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass)
 
 #########OUTPUT FILE#########
-output_file = open("VegOutput.csv","w")
-output_file.write("Day, Mean_Temp, lvsg, rootsg, stemg, lvsd, rootd, stemd, AGB, TOTB\n")
+'''
+output_file = open("VegOutput.csv", "w")
+output_file.write("Day, mean_temp, lvsg, rootsg, stemg, lvsd, rootsd, stemd, AGB, TOTB\n")
 
-output_file.write(str(day.iloc[j]) + "," + str(Light.iloc[j]['meantemp']) + "," + str(dailyleafg.iloc[j]) + "," + str(dailyrootg.iloc[j]) + "," + str(dailystemg.iloc[j]) + "," + str(dailyleafd.iloc[j]) + "," + str(dailyrootd.iloc[j]) + "," + str(dailyAGbiomass.iloc[j]) + "," + str(dailyTOTbiomass.iloc[j]) + "\n")
-output_file.close() 
+output_file.write(str(days) + "," + str(Light["meantemp"]) + "," + str(dailyleafg_list) + "," + str(dailyrootg_list) + "," + str(dailystemg_list) + "," + str(dailyleafd_list) + "," + str(dailyrootd_list) + "," + str(dailystemd_list) + "," + str(dailyAGbiomass_list) + "," + str(dailyTOTbiomass_list) + "\n")
 
+output_file.close()
+'''                
 
-                
-            
+def VegOutputCSV(filename, listoflist):
+    out_file = open(filename, "w")
+    out_file.write("Day, mean_temp, lvsg, rootsg, stemg, lvsd, rootsd, stemd, AGB, TOTB\n")
+    for i in range(len(listoflist)):
+        out_file.write(str(listoflist[i][0]) + "," + str(listoflist[i][1]) + "," + str(listoflist[i][2]) + "," + str(listoflist[i][3]) + "," + str(listoflist[i][4]) + "," + str(listoflist[i][5]) + "," str(listoflist[i][6]) + "," + str(listoflist[i][7]) + "," + str(listoflist[i][8]) + "\n")
+    out_file.close()
+    
+VegOutputCSV("Vegoutput.csv", data_needs)            
             
     
    
