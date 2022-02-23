@@ -521,7 +521,9 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     dailyRTbiomass_list = dailyRTbiomass.tolist()
     
 
-data_needs = [days, avgtemp, dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailyrootd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass_list]
+#data_needs = [days, avgtemp, dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailyrootd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass_list]
+
+data_needs = [day, avgtemp, dailyleafg, dailyrootg, dailystemg, dailyleafd, dailyrootd, dailystemd, dailyAGbiomass, dailyTOTbiomass]
 
 
 #########OUTPUT FILE#########
@@ -535,27 +537,22 @@ output_file.close()
 '''                
 
 
-    
+  
 output_file = open("VegOutput.csv", "w")
 output_file.write("Day, mean_temp, lvsg, rootsg, stemg, lvsd, rootsd, stemd, AGB, TOTB\n")  
-for i in range(len(data_needs)):
+for i in range(len(data_needs[0])):
         output_file.write(str(data_needs[0][i]) + "," + str(data_needs[1][i]) + "," + str(data_needs[2][i]) + "," + str(data_needs[3][i]) + "," + str(data_needs[4][i]) + "," + str(data_needs[5][i]) + "," + str(data_needs[6][i]) + "," + str(data_needs[7][i]) + "," + str(data_needs[8][i]) + "," + str(data_needs[9][i]) +  "\n")
 
 
 
 output_file.close()
 
-'''
-columns = ["Day", "mean_temp", "lvsg", "rootsg", "stemg", "lvsd", "rootsd", "stemd", "AGB", "TOTB"]
-rows = [days, avgtemp, dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailyrootd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass_list]
-list_rows = data_needs
-with open("Vegoutput.csv","w") as csvfile:
-    write = csv.writer(csvfile)
-    write.writerow(columns)
-    write.writerows(rows) 
-'''
 
-        
+
+    
+
+       
+ 
     
     
     
