@@ -521,7 +521,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     dailyRTbiomass_list = dailyRTbiomass.tolist()
     
 
-data_needs = (days, avgtemp, dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass_list)
+data_needs = [days, avgtemp, dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailyrootd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass_list]
 
 
 #########OUTPUT FILE#########
@@ -534,18 +534,27 @@ output_file.write(str(days) + "," + str(Light["meantemp"]) + "," + str(dailyleaf
 output_file.close()
 '''                
 
-def VegOutputCSV(filename, listoflist):
-    out_file = open(filename, "w")
-    out_file.write("Day, mean_temp, lvsg, rootsg, stemg, lvsd, rootsd, stemd, AGB, TOTB\n")
-    for i in range(len(listoflist)):
-        out_file.write(str(listoflist[i][0]) + "," + str(listoflist[i][1]) + "," + str(listoflist[i][2]) + "," + str(listoflist[i][3]) + "," + str(listoflist[i][4]) + "," + str(listoflist[i][5]) + "," str(listoflist[i][6]) + "," + str(listoflist[i][7]) + "," + str(listoflist[i][8]) + "\n")
-    out_file.close()
+
     
-VegOutputCSV("Vegoutput.csv", data_needs)            
- 
-    
-   
-    
+output_file = open("VegOutput.csv", "w")
+output_file.write("Day, mean_temp, lvsg, rootsg, stemg, lvsd, rootsd, stemd, AGB, TOTB\n")  
+for i in range(len(data_needs)):
+        output_file.write(str(data_needs[0][i]) + "," + str(data_needs[1][i]) + "," + str(data_needs[2][i]) + "," + str(data_needs[3][i]) + "," + str(data_needs[4][i]) + "," + str(data_needs[5][i]) + "," + str(data_needs[6][i]) + "," + str(data_needs[7][i]) + "," + str(data_needs[8][i]) + "," + str(data_needs[9][i]) +  "\n")
+
+
+
+output_file.close()
+
+'''
+columns = ["Day", "mean_temp", "lvsg", "rootsg", "stemg", "lvsd", "rootsd", "stemd", "AGB", "TOTB"]
+rows = [days, avgtemp, dailyleafg_list, dailyrootg_list, dailystemg_list, dailyleafd_list, dailyrootd_list, dailystemd_list, dailyAGbiomass_list, dailyTOTbiomass_list]
+list_rows = data_needs
+with open("Vegoutput.csv","w") as csvfile:
+    write = csv.writer(csvfile)
+    write.writerow(columns)
+    write.writerows(rows) 
+'''
+
         
     
     
