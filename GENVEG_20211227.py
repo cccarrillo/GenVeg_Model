@@ -228,6 +228,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
     ##################################################
     
     totLeafWeight = twlvd + twlvg #twlvd = total (t) weight(w) leaves(lv), d @ dead and g is living or green
+    np.round(totLeafWeight, 4)
     print('Leaf Weight: {}'.format(totLeafWeight))
     totStemWeight = twstd + twstg #total weight of stems where d at end is dead and g is living or green
     print('Stem Weight: {}'.format(totStemWeight))
@@ -285,7 +286,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
       
         if day[j] < endGrow:
             #dailyphoto = []
-            for hr in range(1,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
+            for hr in range(0,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
                 parMicroE = (Light.iloc[j,hr+1]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
                 print('day: {}'.format(day[j]))
                 print('parMicroE: {}'.format(parMicroE))
