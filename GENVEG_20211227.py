@@ -288,13 +288,17 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
             #dailyphoto = []
             for hr in range(0,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
                 parMicroE = (Light.iloc[j,hr]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
+                np.round_(parMicroE, decimals = 4) 
                 print('day: {}'.format(day[j]))
                 print('parMicroE: {}'.format(parMicroE))
                 intSolarRad = parMicroE*math.exp(-(PlantParameters['k'])*twlvg)  #from Charisma instructions: tells how much of the light a plant is going to get as PAR in microeinsteins based on how many leaves are on the plant
+                np.round_(intSolarRad, decimals = 4)
                 print('intSolarRad: {}'.format(intSolarRad))
                 intLightpH = intSolarRad/(intSolarRad+Hi) #amoung of light absorbed, per half saturaion constants from Charisma eq. 3. the monod or michaelis/menten function is adequate for describing the photosynthetic response to light
+                np.round_(intLightpH, decimals = 4)
                 print('intLightpH: {}'.format(intLightpH))
                 photosynthesis = (PlantParameters['pMax']) * intLightpH #pMax is the maximum rate of photosynthesis, species specific
+                np.round_(photosynthesis, decimals = 4) 
                 print('photosynthesis: {}'.format(photosynthesis))
                 fgross.iloc[hr] = photosynthesis #calculates gross assimilation of fgross(like APT) via photosynthesis at specific hour calculate growth per day at three times per day, morning, middday, and evenning and this amount is weighted based on how much light is hitting hte plant based on the latitude of your study site
                 print('fgross: {}'.format(fgross[hr]))
@@ -492,8 +496,10 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         Dia = st_dia   #stem diameter value
         print('dia: {}'.format(Dia))
         AGBiomass = twlvg + twlvd + twstg + twstd
+        np.round_(AGBiomass, decimals = 4)
         print('AGBiomass: {}'.format(AGBiomass))
         TOTBiomass = twlvg + twlvd + twstg + twstd + twrtd + twrtg
+        np.round_(TOTBiomass, decimals = 4)
         print('TOTBiomass: {}'.format(TOTBiomass))
         
     #daily results outputted to vectors
