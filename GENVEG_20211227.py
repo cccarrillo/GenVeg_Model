@@ -287,7 +287,7 @@ for j in range(0,len(day)):   #length function gets or sets the length of a vect
         if day[j] < endGrow:
             #dailyphoto = []
             for hr in range(0,3):  #radiation measured 3x daily, roughly correlates to morning, noon, afternoon
-                parMicroE = (Light.iloc[j,hr+1]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
+                parMicroE = (Light.iloc[j,hr]) * (868/208.32) #convert to correct units which is microeinsteins which is the unit measure of light and what this model is based on
                 print('day: {}'.format(day[j]))
                 print('parMicroE: {}'.format(parMicroE))
                 intSolarRad = parMicroE*math.exp(-(PlantParameters['k'])*twlvg)  #from Charisma instructions: tells how much of the light a plant is going to get as PAR in microeinsteins based on how many leaves are on the plant
